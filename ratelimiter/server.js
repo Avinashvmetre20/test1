@@ -1,6 +1,9 @@
 const express = require("express");
 const rateLimit =require("express-rate-limit");
 const limi = require("./middle/ratelimit")
+const morgan = require("morgan")
+const fs = require("fs");
+const path =require("path");
 
 const app= express()
  
@@ -13,10 +16,25 @@ const app= express()
 // })
 
 app.use(limi)
+// app.use(morgan("dev"))
 
-app.get("/",(req,res)=>{
-    res.send("sikh");
+const accessLogStream = fs.createWriteStream(
+  path.join(__dirname, 'access.log'),
+  { flags: 'a' } // 'a' means append
+); 
+ 
+// Setup the logger
+app.use(morgan('combined', { stream: accessLogStream })); // Logs to file
+// app.use(morgan('dev')); // Also logs to console (optional)
+
+app.get("/s",(req,res)=>{
+    res.send("shaikh");
 })
+
+app.get("/r",(req,res)=>{
+    res.send("ranjeet");
+})
+
 
 app.listen(8081,()=>{
     console.log("running")
