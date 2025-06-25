@@ -1,6 +1,7 @@
 const express = require("express");
 const rateLimit =require("express-rate-limit");
 const limi = require("./middle/ratelimit")
+const errorHandler = require("./middle/errorhandler")
 const morgan = require("morgan")
 const fs = require("fs");
 const path =require("path");
@@ -23,9 +24,7 @@ const accessLogStream = fs.createWriteStream(
   { flags: 'a' } // 'a' means append
 ); 
  
-// Setup the logger
-app.use(morgan('combined', { stream: accessLogStream })); // Logs to file
-// app.use(morgan('dev')); // Also logs to console (optional)
+app.use(morgan('combined', { stream: accessLogStream }));
 
 app.get("/s",(req,res)=>{
     res.send("shaikh");
@@ -35,6 +34,14 @@ app.get("/r",(req,res)=>{
     res.send("ranjeet");
 })
 
+app.get("/error", (req, res, next) => {
+//   const error = new Error("This is a test error");
+  error.statusCode = 400;
+  next(error);
+});
+
+app.use(errorHandler);
+ 
 
 app.listen(8081,()=>{
     console.log("running")
